@@ -1,0 +1,41 @@
+[?25l[?7l[0m[31m[1m        ,.=:!!t3Z3z.,
+       :tt:::tt333EE3
+[0m[31m[1m       Et:::ztt33EEEL[0m[32m[1m @Ee.,      ..,
+[0m[31m[1m      ;tt:::tt333EE7[0m[32m[1m ;EEEEEEttttt33#
+[0m[31m[1m     :Et:::zt333EEQ.[0m[32m[1m $EEEEEttttt33QL
+[0m[31m[1m     it::::tt333EEF[0m[32m[1m @EEEEEEttttt33F
+[0m[31m[1m    ;3=*^```"*4EEV[0m[32m[1m :EEEEEEttttt33@.
+[0m[34m[1m    ,.=::::!t=., [0m[31m[1m`[0m[32m[1m @EEEEEEtttz33QF
+[0m[34m[1m   ;::::::::zt33)[0m[32m[1m   "4EEEtttji3P*
+[0m[34m[1m  :t::::::::tt33.[0m[33m[1m:Z3z..[0m[32m[1m  ``[0m[33m[1m ,..g.
+[0m[34m[1m  i::::::::zt33F[0m[33m[1m AEEEtttt::::ztF
+[0m[34m[1m ;:::::::::t33V[0m[33m[1m ;EEEttttt::::t3
+[0m[34m[1m E::::::::zt33L[0m[33m[1m @EEEtttt::::z3F
+[0m[34m[1m{3=*^```"*4E3)[0m[33m[1m ;EEEtttt:::::tZ`
+[0m[34m[1m             `[0m[33m[1m :EEEEtttt::::z7
+                 "VEzjt:;;z>*`[0m
+[16A[9999999D[39C[0m[1m[31m[1myjmthu[0m@[31m[1mDELL[0m 
+[39C[0m-----------[0m 
+[39C[0m[32m[1mOS[0m[0m:[0m Windows 11 专业版 x86_64[0m 
+[39C[0m[32m[1mHost[0m[0m:[0m Dell Inc. Dell G15 5520[0m 
+[39C[0m[32m[1mKernel[0m[0m:[0m 10.0.22000[0m 
+[39C[0m[32m[1mUptime[0m[0m:[0m 8 hours, 14 mins[0m 
+[39C[0m[32m[1mPackages[0m[0m:[0m 2 (scoop)[0m 
+[39C[0m[32m[1mShell[0m[0m:[0m bash 5.1.16[0m 
+[39C[0m[32m[1mResolution[0m[0m:[0m 1920x1080[0m 
+[39C[0m[32m[1mDE[0m[0m:[0m Aero[0m 
+[39C[0m[32m[1mWM[0m[0m:[0m Explorer[0m 
+[39C[0m[32m[1mWM Theme[0m[0m:[0m Custom[0m 
+[39C[0m[32m[1mTerminal[0m[0m:[0m Windows Terminal[0m 
+[39C[0m[32m[1mCPU[0m[0m:[0m 12th Gen Intel i7-12700H (20) @ 2.690GHz[0m 
+[39C[0m[32m[1mGPU[0m[0m:[0m Caption[0m 
+[39C[0m[32m[1mGPU[0m[0m:[0m NVIDIA GeForce RTX 3050 Laptop GPU[0m 
+[39C[0m[32m[1mGPU[0m[0m:[0m Intel(R) Iris(R) Xe Graphics[0m 
+[39C[0m[1mGPU[0m 
+[39C[0m[32m[1mMemory[0m[0m:[0m 7162MiB / 16068MiB[0m 
+
+[39C[30m[40m   [31m[41m   [32m[42m   [33m[43m   [34m[44m   [35m[45m   [36m[46m   [37m[47m   [m
+[39C[38;5;8m[48;5;8m   [38;5;9m[48;5;9m   [38;5;10m[48;5;10m   [38;5;11m[48;5;11m   [38;5;12m[48;5;12m   [38;5;13m[48;5;13m   [38;5;14m[48;5;14m   [38;5;15m[48;5;15m   [m
+
+
+[?25h[?7h
