@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+.vs
+.vscode
+build
+build-rel
+build-dbg
