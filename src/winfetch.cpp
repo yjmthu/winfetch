@@ -1,6 +1,7 @@
 #include <Windows.h>
 #include <Uxtheme.h>
 #include <DXGI.h>
+#include <iterator>
 #include <lmcons.h>
 #include <string_view>
 #include <tlhelp32.h>
@@ -17,10 +18,14 @@
 #include <thread>
 #include <format>
 #include <filesystem>
+#include <regex>
 
 typedef std::basic_string<TCHAR> String;
+typedef std::basic_string_view<TCHAR> StringView;
 typedef std::basic_ostringstream<TCHAR> Ostringstream;
 typedef std::basic_istringstream<TCHAR> Istringstream;
+typedef std::basic_regex<TCHAR> Regex;
+typedef std::match_results<String::const_iterator> Match;
 
 #ifdef UNICODE
 #define tcout wcout
@@ -68,35 +73,23 @@ void PrintLogo() {
 }
 
 String GetArchitecture() {
-    return 
-#ifdef _MSC_VER
-
-#ifdef _M_IX86
-    TEXT("i386");
-#elif defined (_M_X64)
-    TEXT("x86_64");
-#elif defined (_M_ARM)
-    TEXT("arm");
-#elif defined (_M_THUMB)
-    TEXT("thumb");
-#elif defined (_M_ARM64)
-    TEXT("arm64");
-#endif
-
-#elif defined (__GNUC__) || defined(__clang__)
-
-#ifdef __i386__
-    TEXT("i386");
-#elif defined (__x86_64__)
-    TEXT("x86_64");
-#elif defined (__arm__)
-    TEXT("arm");
-#elif defined (__thumb__)
-    TEXT("thumb");
-#elif defined (__aarch64__)
-    TEXT("arm64");
-#endif
-#endif
+    SYSTEM_INFO info;
+    GetNativeSystemInfo(&info);
+    switch (info.wProcessorArchitecture) {
+        case PROCESSOR_ARCHITECTURE_AMD64:
+            return TEXT("x86_64");
+        case PROCESSOR_ARCHITECTURE_ARM:
+            return TEXT("ARM");
+        case PROCESSOR_ARCHITECTURE_ARM64:
+            return TEXT("ARM64");
+        case PROCESSOR_ARCHITECTURE_IA64:
+            return TEXT("Intel Itanium-based");
+        case PROCESSOR_ARCHITECTURE_INTEL:
+            return TEXT("x86");
+        case PROCESSOR_ARCHITECTURE_UNKNOWN:
+        default:
+            return TEXT("Unknown architecture");
+    }
 }
 
 bool GetComputerName() {
@@ -183,27 +176,24 @@ bool GetProcessorInfo() {
         return false;
     }
 
-    Ostringstream stream;
-    stream << reinterpret_cast<PTCHAR>(pData) << TEXT(" @ ");
+    String sCpuName(reinterpret_cast<PTCHAR>(pData));
     delete [] pData;
 
-    dwType = REG_DWORD;
-    dwDataSize = sizeof(DWORD);
-    pData = new BYTE[sizeof(DWORD)];
-    if (ERROR_SUCCESS != RegQueryValueEx(hKey, TEXT("~MHz"), 0, &dwType, pData, &dwDataSize)) {
-        return false;
+    Regex pattern(TEXT("^.+ @ [0-9\\.]+ GHz$"));
+    Match result;
+    if (!std::regex_match(sCpuName, result, pattern)) {
+        dwType = REG_DWORD;
+        dwDataSize = sizeof(DWORD);
+        DWORD dwData;
+        if (ERROR_SUCCESS == RegQueryValueEx(hKey, TEXT("~MHz"), 0, &dwType, (PBYTE)&dwData, &dwDataSize)) {
+            sCpuName += std::format(TEXT(" @ {:.2f} GHz"), dwData / 1000.0);
+        }
     }
-    stream << *reinterpret_cast<PDWORD>(pData) / 1000.0 << TEXT("GHz");
-    delete [] pData;
 
-    gNameMap.insert(std::make_pair(TEXT("CPU"), stream.str()));
+    gNameMap.insert(std::make_pair(TEXT("CPU"), sCpuName));
     RegCloseKey(hKey);
     
-#ifdef UNICODE
-    gNameMap.insert(std::make_pair(TEXT("CPU Core"), std::to_wstring(std::thread::hardware_concurrency())));
-#else
-    gNameMap.insert(std::make_pair(TEXT("CPU Core"), std::to_string(std::thread::hardware_concurrency())));
-#endif
+    gNameMap.insert(std::make_pair(TEXT("CPU Core"), std::format(TEXT("{}"), std::thread::hardware_concurrency())));
 
     return true;
 }
@@ -427,7 +417,7 @@ bool GetShellName() {
     String cmd = "\"" + parentPath.string() + "\" --version";
 #endif
     String shellInfo = GetProcessOutPut(cmd.c_str());
-    while (!shellInfo.empty() && TEXT("\r\n"sv).find(shellInfo.back()) ) {
+    while (!shellInfo.empty() && TEXT("\r\n"sv).find(shellInfo.back()) != StringView::npos) {
         shellInfo.pop_back();
     }
     gNameMap.insert(std::make_pair(TEXT("Shell"), shellInfo));
