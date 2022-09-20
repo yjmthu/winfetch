@@ -33,6 +33,8 @@
 
 .vs
 .vscode
+.cache
+.xmake
 build
 build-rel
 build-dbg
