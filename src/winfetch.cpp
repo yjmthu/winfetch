@@ -19,6 +19,7 @@
 #include <format>
 #include <filesystem>
 #include <regex>
+#include <chrono>
 
 typedef std::basic_string<TCHAR> String;
 typedef std::basic_string_view<TCHAR> StringView;
@@ -26,6 +27,8 @@ typedef std::basic_ostringstream<TCHAR> Ostringstream;
 typedef std::basic_istringstream<TCHAR> Istringstream;
 typedef std::basic_regex<TCHAR> Regex;
 typedef std::match_results<String::const_iterator> Match;
+
+using namespace std::literals;
 
 #ifdef UNICODE
 #define tcout wcout
@@ -249,24 +252,10 @@ bool GetMemoryInfo() {
 }
 
 bool GetUptime() {
-    constexpr DWORD hour = 60, day = hour * 24;
-    Ostringstream stream;
-    DWORD dwTimeAll = GetTickCount() / 60000;
-    if (dwTimeAll >= day) {
-        stream << dwTimeAll / day << " days, ";
-        dwTimeAll %= day;
-        stream << dwTimeAll / hour << " hours, ";
-        dwTimeAll %= hour;
-        stream << dwTimeAll << " mins";
-    } else if (dwTimeAll >= hour) {
-        stream << dwTimeAll / hour << " hours, ";
-        dwTimeAll %= hour;
-        stream << dwTimeAll << " mins";
-    } else {
-        stream << dwTimeAll << " mins";
-    }
-    gNameMap.insert(std::make_pair(TEXT("Uptime"), stream.str()));
-    return true;
+  using namespace std::chrono;
+  auto time = duration_cast<seconds>(milliseconds(GetTickCount()));
+  gNameMap.insert(std::make_pair(L"Uptime", std::format(L"{:%H hours, %M minutes, %S seconds}", time)));
+  return true;
 }
 
 bool GetScreenInfo() {
