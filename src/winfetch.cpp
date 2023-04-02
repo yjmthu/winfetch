@@ -5,6 +5,7 @@
 #include <lmcons.h>
 #include <string_view>
 #include <tlhelp32.h>
+#include <intrin.h>
 #include <cstdio>
 
 #include <iostream>
@@ -164,6 +165,7 @@ inline bool GetOSName() {
 }
 
 bool GetProcessorInfo() {
+#if 0
     HKEY hKey = NULL;
     if (ERROR_SUCCESS != RegOpenKeyEx(HKEY_LOCAL_MACHINE, TEXT("HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0"), 0, KEY_READ, &hKey)) {
         return false;
@@ -199,6 +201,52 @@ bool GetProcessorInfo() {
     gNameMap.insert(std::make_pair(TEXT("CPU Core"), std::format(TEXT("{}"), std::thread::hardware_concurrency())));
 
     return true;
+#else
+    // 创建一个 SYSTEM_INFO 结构体，用于存储系统信息
+    SYSTEM_INFO sysInfo;
+    // 调用 GetSystemInfo 函数，获取系统信息
+    GetSystemInfo(&sysInfo);
+
+    // 创建一个 char 数组，用于存储 CPU 的名称
+    char CPUName[0x40];
+    // 创建一个 int 数组，用于存储 CPUID 指令的结果
+    int CPUInfo[4] = {-1};
+    // 调用 __cpuid 函数，执行 CPUID 指令，获取 CPU 的名称
+    __cpuid(CPUInfo, 0x80000000);
+    unsigned int nExIds = CPUInfo[0];
+    for (unsigned int i = 0x80000000; i <= nExIds; ++i) {
+      __cpuid(CPUInfo, i);
+      if (i == 0x80000002) {
+        memcpy(CPUName, CPUInfo, sizeof(CPUInfo));
+      } else if (i == 0x80000003) {
+        memcpy(CPUName + 16, CPUInfo, sizeof(CPUInfo));
+      } else if (i == 0x80000004) {
+        memcpy(CPUName + 32, CPUInfo, sizeof(CPUInfo));
+      }
+    }
+
+#ifdef UNICODE
+    std::string ansi = CPUName;
+    // Wide string
+    std::wstring wide;
+    // Get the required buffer size
+    int size = MultiByteToWideChar(CP_ACP, 0, ansi.c_str(), -1, NULL, 0);
+    if (size > 0)
+    {
+        // Allocate the buffer
+        wide.resize(size);
+        // Convert the string
+        MultiByteToWideChar(CP_ACP, 0, ansi.c_str(), -1, &wide[0], size);
+    }
+    // Print the result
+    gNameMap.insert(std::make_pair(TEXT("CPU"), wide));
+#else
+    gNameMap.insert(std::make_pair(TEXT("CPU"), CPUName));
+#endif
+    
+    gNameMap.insert(std::make_pair(TEXT("CPU Core"), std::format(TEXT("{}"), sysInfo.dwNumberOfProcessors)));
+#endif
+  return true;
 }
 
 bool GetBiosInfo() {
@@ -321,8 +369,11 @@ bool GetGPUInfo() {
         DXGI_ADAPTER_DESC adapterDesc;
         vAdapters[i]->GetDesc(&adapterDesc);
         gNameMap.insert(std::make_pair(TEXT("GPU"), adapterDesc.Description));
+        vAdapters[i]->Release();
     }
     vAdapters.clear();
+
+    pFactory->Release();
     return true;
 }
 

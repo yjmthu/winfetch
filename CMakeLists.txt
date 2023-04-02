@@ -28,3 +28,5 @@ target_link_libraries(winfetch PRIVATE
     UxTheme
 )
 
+add_executable(cpu example/cpu.cpp)
+

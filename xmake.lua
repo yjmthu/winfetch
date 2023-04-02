@@ -18,4 +18,3 @@ target("winfetch")
     task.run("project", {kind = "compile_commands", outputdir = "build"})
   end)
 target_end()
-
